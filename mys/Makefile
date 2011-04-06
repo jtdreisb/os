@@ -14,6 +14,7 @@ SRC = \
     window.c \
 	shell.c \
 	input.c \
+	output.c \
 
 OBJS = $(patsubst %.c, %.o, $(SRC))
 

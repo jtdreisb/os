@@ -8,15 +8,6 @@
  */ 
 
 
-#include <unistd.h>
-#include <signal.h>
-#include <sys/types.h>
-#include <sys/ioctl.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <termios.h>
-#include <fcntl.h>
-#include <sys/wait.h>
 #include "global.h"
 
 /*
@@ -53,25 +44,38 @@ int main(int argc, char ** argv) {
         outputfile = argv[1];
     }
 
-    outfd = open(outputfile, O_WRONLY|O_CREAT, 0666);
-    if (outfd == -1) {
-       perror("open: typescript"); 
-       exit(1);
-    }
-    
     get_winsize(STDIN_FILENO,&oldwin);
     raw_mode(STDIN_FILENO, &oldterm);
 
     /* start the slave process and return the fd we use to communicate with it */
-    /*shpty = startShell(pids);*/
+    shpty = startShell(&pids[0], &oldterm, &oldwin);
+    if (shpty == -1) {
+        perror("startShell");
+        restore_mode(STDIN_FILENO,&oldterm);
+        exit(1);
+    }
     /* start input forwarding process */
     pids[1] = inputForward(shpty);
     if (pids[1] == -1) {
         perror("inputforward");
-    };
-   
-/* do the ouput shoveling and archiving */
+        restore_mode(STDIN_FILENO,&oldterm);
+        exit(1);
+    }
 
+    outfd = open(outputfile, O_WRONLY|O_CREAT, 0666);
+    if (outfd == -1) {
+       perror("open: typescript"); 
+       restore_mode(STDIN_FILENO,&oldterm);
+       exit(1);
+    }
+    
+    /* do the ouput shoveling and archiving */
+    write(outfd, "This is a typescript\n", 21);
+    if (output_archive(shpty, outfd) == -1) {
+        perror("output");
+    }
+    write(outfd,"Final message\n",14);
+    
     restore_mode(STDIN_FILENO, &oldterm);
 
     kill(pids[0], SIGTERM);
@@ -86,5 +90,7 @@ int main(int argc, char ** argv) {
     if (status) {
         fprintf(stderr, "proc %d exited with status %d", pid, status);
     }
+
     return 0;
 }
+

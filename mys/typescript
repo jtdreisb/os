@@ -1,0 +1,7 @@
+This is a typescript
+]0;jtdreisb@vogon.csc.calpoly.edu: /home/jtdreisb/os-453/mys[01;32mjtdreisb@vogon[00m:[01;34mmys[00m $ ls
+global.h  input.o  main.o    modes.c  mys	output.o  shell.c  typescript  window.o
+input.c   main.c   Makefile  modes.o  output.c	README	  shell.o  window.c
+]0;jtdreisb@vogon.csc.calpoly.edu: /home/jtdreisb/os-453/mys[01;32mjtdreisb@vogon[00m:[01;34mmys[00m $ exit
+exit
+Final message

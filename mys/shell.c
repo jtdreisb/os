@@ -1,19 +1,15 @@
-
-#define _XOPEN_SOURCE 600
-#define _POSIX_C_SOURCE 200112L
-#include <stdlib.h>
-#include <fcntl.h>
-#include <unistd.h>
-#include <stdio.h>
-
 /* startShell
  * create a pty
  * 
  * exec a shell with slave end duped into stdin,stdout,stderr
  * return the master end
  */
-int startShell(int *pid) {
+#include "global.h"
+int startShell(int *pid, struct termios *tm, struct winsize *ws) {
     int shpty;
+    int slave;
+    struct passwd *pw;
+    char *shell;
     /* 
      * make pty... 
      */
@@ -34,6 +30,40 @@ int startShell(int *pid) {
     }
 
     if(!(*pid = fork())) {
+        if (setsid() == -1) {
+            perror("slave:setsid");
+            exit(1);
+        }
+
+        slave = open(ptsname(shpty), O_RDWR, 0666);
+        if (slave == -1) {
+            perror("open:slave pty");
+            exit(1);
+        }
+
+        close(shpty);
+        dup2(slave, 0);
+        dup2(slave, 1);
+        dup2(slave, 2);
+
+        set_winsize(STDIN_FILENO,ws);
+        restore_mode(STDIN_FILENO, tm);
+
+        /* get shell preference from env */
+        shell = getenv("SHELL");
+        if (shell == NULL) {
+            /* try passwd */
+            pw = getpwuid(getuid());
+            if (pw->pw_shell == NULL) {
+                /* user has no defined shell */
+                fprintf(stderr, "user has no defined shell\n");
+                exit(1);
+            }
+            shell = pw->pw_shell;
+        }
+
+        execl(shell,shell, NULL);
+
 
     }
 

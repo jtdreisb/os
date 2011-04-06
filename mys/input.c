@@ -1,7 +1,4 @@
-#include <unistd.h>
-#include <signal.h>
-#include <stdio.h>
-#include <stdlib.h>
+#include "global.h"
 /*
  * inputForward starts a process that reads from stdin 
  * and blocks until input is read. Then it forwards to the
@@ -11,11 +8,13 @@
  * slave - master end of the pty
  */
 
-#define BUF_SIZE 4096
 int fd;
 
 void sig_handler(int signum) {
     close(fd);
+#if DEBUG == 1
+    fprintf(stderr, "Recieved signal\n");
+#endif
     exit(0);
 }
 
@@ -43,6 +42,10 @@ int inputForward(int slave) {
                 perror("input: read");
                 exit(1);
             }
+#if DEBUG==1
+            fprintf(stderr, "read: %s", buf);
+#endif
+
             if (in > 0) {
                 out = 0;
                 while (out != in) {

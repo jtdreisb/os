@@ -15,6 +15,8 @@
 #include <fcntl.h>
 #include <sys/wait.h>
 #include <pwd.h>
+#include <strings.h>
+#include <string.h>
 
 #define DEBUG 0
 

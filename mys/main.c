@@ -22,6 +22,7 @@
  *
  * 
  */
+#define GREETING "Script started, output file is "
 
 int main(int argc, char ** argv) {
 
@@ -70,7 +71,13 @@ int main(int argc, char ** argv) {
     }
     
     /* do the ouput shoveling and archiving */
-    write(outfd, "This is a typescript\n", 21);
+	write(outfd, GREETING, strlen(GREETING));
+	write(STDOUT_FILENO, GREETING, strlen(GREETING));
+	write(outfd, outputfile, strlen(outputfile));
+	write(STDOUT_FILENO, outputfile, strlen(outputfile));
+	write(outfd, "\n", 1);
+	write(STDOUT_FILENO, "\n", 1);
+
     if (output_archive(shpty, outfd) == -1) {
         perror("output");
     }
@@ -78,6 +85,7 @@ int main(int argc, char ** argv) {
     
     restore_mode(STDIN_FILENO, &oldterm);
 
+	fprintf(stderr, "%d, %d\n", pids[0], pids[1]);
     kill(pids[0], SIGTERM);
     kill(pids[1], SIGTERM);
     close(outfd);

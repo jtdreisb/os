@@ -5,9 +5,7 @@ int output_archive(int slave, int outfd) {
     char buf[BUF_SIZE];
     for (;;) {
         n = read(slave, buf,BUF_SIZE);
-        if (n == -1) {
-            return -1;
-        }
+        
         if (n > 0) {
             w = 0;
             while (w != n) {
@@ -17,6 +15,8 @@ int output_archive(int slave, int outfd) {
             while (w != n) {
                 w += write(STDOUT_FILENO, buf+w, n-w);
             }
-        }
+        } else {
+			return n;
+		}
     }
 }

@@ -43,7 +43,7 @@ int main(int argc, char ** argv) {
         execlp("ls", "ls", NULL);
     }
     close(p[1]);
-    outfile = open("outfile", (O_CREAT | O_WRONLY), 0666);
+    outfile = open("outfile", (O_CREAT | O_TRUNC | O_WRONLY), 0666);
     if ( outfile == -1 ) {
         perror("open");
         exit(1);
@@ -61,9 +61,9 @@ int main(int argc, char ** argv) {
 
     ret = 0;
     wait(&err);
-    ret += err;
+    ret += 1;
     wait(&err);
-    ret += err;
+    ret += 1;
 
 
     return ret;

@@ -5,9 +5,10 @@
  * return the master end
  */
 #include "global.h"
-int startShell(int *pid, struct termios *tm, struct winsize *ws) {
+int startShell( struct termios *tm, struct winsize *ws) {
     int shpty;
     int slave;
+	int pid;
     struct passwd *pw;
     char *shell;
     /* 
@@ -29,7 +30,7 @@ int startShell(int *pid, struct termios *tm, struct winsize *ws) {
         exit(3);
     }
 
-    if(!(*pid = fork())) {
+    if(!(pid = fork())) {
         if (setsid() == -1) {
             perror("slave:setsid");
             exit(1);

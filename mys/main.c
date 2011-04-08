@@ -23,11 +23,12 @@
  * 
  */
 #define GREETING "Script started, output file is "
+#define DEPART   "\nScript finished on "
 
 int main(int argc, char ** argv) {
 
     int pid, status;
-    int pids[2];
+    int pids;
     char *outputfile = "typescript";
     /* fd of ouput file */
     int outfd;
@@ -35,6 +36,8 @@ int main(int argc, char ** argv) {
     int shpty;
     struct termios oldterm;
     struct winsize oldwin;
+	char *tstring;
+	time_t tval;
     
     /* there should be no more than 2 arguments */
     if (argc > 2) {
@@ -49,21 +52,21 @@ int main(int argc, char ** argv) {
     raw_mode(STDIN_FILENO, &oldterm);
 
     /* start the slave process and return the fd we use to communicate with it */
-    shpty = startShell(&pids[0], &oldterm, &oldwin);
+    shpty = startShell(&oldterm, &oldwin);
     if (shpty == -1) {
         perror("startShell");
         restore_mode(STDIN_FILENO,&oldterm);
         exit(1);
     }
     /* start input forwarding process */
-    pids[1] = inputForward(shpty);
-    if (pids[1] == -1) {
+    pids = inputForward(shpty);
+    if (pids == -1) {
         perror("inputforward");
         restore_mode(STDIN_FILENO,&oldterm);
         exit(1);
     }
 
-    outfd = open(outputfile, O_WRONLY|O_CREAT, 0666);
+    outfd = open(outputfile, O_WRONLY|O_CREAT|O_TRUNC, 0666);
     if (outfd == -1) {
        perror("open: typescript"); 
        restore_mode(STDIN_FILENO,&oldterm);
@@ -81,21 +84,25 @@ int main(int argc, char ** argv) {
     if (output_archive(shpty, outfd) == -1) {
         perror("output");
     }
-    write(outfd,"Final message\n",14);
-    
+
+	tval = time(NULL);
+	tstring = ctime(&tval);
+	write(outfd, DEPART, strlen(DEPART));
+	write(STDOUT_FILENO, DEPART, strlen(DEPART));
+    write(outfd,tstring,strlen(tstring));
+	write(STDOUT_FILENO,tstring,strlen(tstring));
+  /*  write(outfd,"\n",1);
+	write(STDOUT_FILENO,"",1);*/
+
     restore_mode(STDIN_FILENO, &oldterm);
 
-	fprintf(stderr, "%d, %d\n", pids[0], pids[1]);
-    kill(pids[0], SIGTERM);
-    kill(pids[1], SIGTERM);
+
+    /*kill(pids[0], SIGTERM);*/
+    kill(pids, SIGTERM);
     close(outfd);
     close(shpty);
     pid = wait(&status);
-    if (status) {
-        fprintf(stderr, "proc %d exited with status %d", pid, status);
-    }
-    pid = wait(&status);
-    if (status) {
+    if (WIFSIGNALED(status)) {
         fprintf(stderr, "proc %d exited with status %d", pid, status);
     }
 

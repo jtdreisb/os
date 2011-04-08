@@ -17,10 +17,11 @@
 #include <pwd.h>
 #include <strings.h>
 #include <string.h>
+#include <time.h>
 
 #define DEBUG 0
 
-#define BUF_SIZE 4096
+#define BUF_SIZE 100
 
 
 int startShell();

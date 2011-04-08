@@ -1,9 +1,0 @@
-Script started, output file is typescript
-[01;32mjtdreisb@zephyr[00m:[01;34mmys[00m$ ls
-Makefile	global.h	main.c		modes.o		output.o	typescript
-README		input.c		main.o		mys		shell.c		window.c
-foo		input.o		modes.c		output.c	shell.o		window.o
-[01;32mjtdreisb@zephyr[00m:[01;34mmys[00m$ exit
-exit
-
-Script finished on Thu Apr  7 20:37:37 2011

@@ -8,6 +8,7 @@
  */ 
 
 
+#include <errno.h>
 #include "global.h"
 
 /*
@@ -82,7 +83,9 @@ int main(int argc, char ** argv) {
 	write(STDOUT_FILENO, "\n", 1);
 
     if (output_archive(shpty, outfd) == -1) {
+        if (errno != EIO) {
         perror("output");
+        }
     }
 
 	tval = time(NULL);
@@ -91,13 +94,10 @@ int main(int argc, char ** argv) {
 	write(STDOUT_FILENO, DEPART, strlen(DEPART));
     write(outfd,tstring,strlen(tstring));
 	write(STDOUT_FILENO,tstring,strlen(tstring));
-  /*  write(outfd,"\n",1);
-	write(STDOUT_FILENO,"",1);*/
 
     restore_mode(STDIN_FILENO, &oldterm);
 
 
-    /*kill(pids[0], SIGTERM);*/
     kill(pids, SIGTERM);
     close(outfd);
     close(shpty);

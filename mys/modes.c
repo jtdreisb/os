@@ -1,4 +1,6 @@
-/* line discipline modes */
+/* 
+ * line discipline modes provided by nico
+ */
 
 #include <stdio.h>
 #include <termios.h>

@@ -1,3 +1,4 @@
+/* window size utilities provided my nico */
 #include <sys/types.h>
 #include <sys/ioctl.h>
 #include <stdio.h>

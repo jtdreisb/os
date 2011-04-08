@@ -9,7 +9,7 @@
  */
 
 int fd;
-
+/* handles signal from the output process */
 void sig_handler(int signum) {
     close(fd);
 #if DEBUG == 1
@@ -17,7 +17,7 @@ void sig_handler(int signum) {
 #endif
     exit(0);
 }
-
+/* configures signal handler to respond to SIGTERM */
 int set_signal() {
     struct sigaction sa;
     sigemptyset(&sa.sa_mask);
@@ -25,7 +25,7 @@ int set_signal() {
     sa.sa_handler = sig_handler;
     return sigaction(SIGTERM,&sa, NULL); 
 }
-
+/* main input forwarding loop */
 int inputForward(int slave) {
     int pid;
     int in,out;

@@ -1,7 +1,5 @@
-/* global header
- * 
- * kicks off slave proc that runs a shell connected to a 
- * pty
+/* 
+ * global header
  */
 #define _XOPEN_SOURCE 600
 #define _POSIX_C_SOURCE 200112L

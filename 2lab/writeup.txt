@@ -1,0 +1,151 @@
+1. GET the system
+
+Approach
+
+First, I tried the qemu build on vogon, but ultimately decided to run qemu on my mac. 
+
+Problems Encountered
+
+Building from source failed on my mac.
+
+
+Solutions
+
+So I downloaded the qemu gui applications "Q". 
+
+Lessons Learned
+
+Cross compiling open source software is not always as simple as ./configure && make && sudo make install 
+
+
+2. LOGIN
+
+Approach:
+
+Type "root" at the prompt.
+
+Problems:
+
+none.
+
+Solution:
+
+none.
+
+Learned:
+
+Minix login is very similar to linux login.
+
+3. MAKE USER
+
+Approach:
+
+Use the adduser utility.
+
+Problems:
+
+Didn't specify the group or directory.
+
+Solution:
+
+# adduser jason wheel /home/jason
+# passwd jason
+<enter password twice> 
+# su jason
+
+Learned:
+
+That I had to specify a group and home directory for the user.
+
+
+4. FLOPPY DISK
+
+Approach:
+
+Use the utilities provided by "Q" software.
+Create a 1.44 Mb file on the host computer and set it to be the floppy device.
+
+Problems:
+
+I experienced many problems creating, mounting and using a floppy disk device
+using qemu. Also, I ran into more problems with my keymap. For example '/' was
+remapped to ?. Therefore I had to type SHIFT+/ to get the character '/'.
+
+On the host machine I created a floppy image with 
+$ dd if=/dev/zero of=./floppy.img bs=1024 count=1440
+
+Then in qemu I added the flag '-fda ./floppy.img' to the arguments.
+
+Though, while in the VM /dev listed many devices and partitions. For example,
+there was all of the following:
+
+/dev/fd0
+/dev/fd0p1
+/dev/fd0p2
+/dev/fd0p3
+/dev/fd1
+/dev/fd1p1
+/dev/fd1p2
+/dev/fd1p3
+/dev/fd2
+/dev/fd2p1
+/dev/fd2p2
+/dev/fd2p3
+
+When trying to mount a directory. This error occured.
+# mkdir /mnt/floppy
+# mount /dev/fd0 /mnt/floppy
+mount: Can't mount /dev/fd0 on /mnt/floppy: Invalid Argument
+*
+
+The error was the same for each floppy disk block device. 
+
+Solutions:
+First, I needed to make a filesystem on the floppy device.
+# mkfs /dev/fd0
+Then mount the device
+# mount /dev/fd0 /mnt/floppy
+Though ultimately since I am using a Macintosh I am unable to mount the minix
+filesystem. Thus, I will need to use the step 5 method to transfer data.
+
+I was able to make sure the floppy image was written to by using the minls
+method after copying the image to vogon. 
+
+Learned:
+
+There must be a valid filesystem to mount the drive. Otherwise, the mount
+command will blow up.
+
+5. THE DIRTY WAY
+
+Approach:
+
+I created a file named cats.txt in the method as follows. 
+# cat > cats.txt
+Hello this is sample text
+
+wohooo!
+^D
+# tar cvf /dev/fd0 ./cats.txt
+
+Then, on the host computer I was able to extract it by using this method.
+$ tar xvf ./floppy.img
+x ./cats.txt
+jtdreisb@pcp067702pcs:os$ cat ./cats.txt 
+Hello this is sample text
+
+wohooo!
+jtdreisb@pcp067702pcs:os$ 
+
+Problems:
+
+None.
+
+Solution:
+Explanation in the approach section.
+
+Learned:
+
+That the disk file can be written to represent a tar archive. Also, that
+regular files may be written to look as if they were real block devices with
+partition tables.

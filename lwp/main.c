@@ -23,94 +23,53 @@
  *
  */
 
-#include <limits.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
-#include <ncurses.h>
-#include <signal.h>
-#include <sys/time.h>
-#include "snakes.h"
 #include "lwp.h"
 
-#define MAXSNAKES  100
-#define INITIALSTACK 2048
+#define INITIALSTACK 2048*4
 
 typedef void (*sigfun)(int signum);
-
-static void install_handler(int sig, sigfun fun);
-static int AlwaysZero();
-
-int main(int argc, char *argv[]){
-  int i,cnt,err;
-  snake s[MAXSNAKES];
-
-  err = 0;
-  for (i=1;i<argc;i++) {                /* check options */
-    if ( !strcmp(argv[i],"-z") ){ /* -z = schedule element 0 */
-      lwp_set_scheduler(AlwaysZero);
-    } else {
-      fprintf(stderr,"%s: unknown option\n",argv[i]);
-      err++;
-    }
-  }
-  if ( err ) {
-    fprintf(stderr,"usage: %s [-z]\n",argv[0]);
-    exit(err);
-  }
-
-  install_handler(SIGINT,  kill_snake);   /* SIGINT will kill a snake */
-  install_handler(SIGQUIT, lwp_stop);    /* SIGQUIT will stop the system */
-
-  start_windowing();            /* start up curses windowing */
-
-  /* Initialize Snakes */
-  cnt = 0;
-  /* snake new_snake(int y, int x, int len, int dir, int color) ;*/
-
-  s[cnt++] = new_snake( 8,30,10, E,1);/* each starts a different color */
-  s[cnt++] = new_snake(10,30,10, E,2);
-  s[cnt++] = new_snake(12,30,10, E,3);
-  s[cnt++] = new_snake( 8,50,10, W,4);
-  s[cnt++] = new_snake(10,50,10, W,5);
-  s[cnt++] = new_snake(12,50,10, W,6);
-  s[cnt++] = new_snake( 4,40,10, S,7);
-
-  /* Draw each snake */
-  draw_all_snakes();
-
-  /* turn each snake loose as an individual LWP */
-  for(i=0;i<cnt;i++) {
-    s[i]->lw_pid = new_lwp((lwpfun)run_hungry_snake,(void*)(s+i),
-                           INITIALSTACK);
-  }
-
-  lwp_start();                     /* returns when the last lwp exits */
-
-  end_windowing();              /* close down curses windowing */
-
-  printf("Goodbye.\n");         /* Say goodbye, Gracie */
-  return err;
-}
+static void indentnum(void *num);
 
 int AlwaysZero() {
   /* A scheduler that always run the first one */
   return 0;
 }
 
-void install_handler(int sig, sigfun fun){
-  /* use sigaction to install a signal handler */
-  struct sigaction sa;
+int main(int argc, char *argv[]){
+    int i;
 
-  sa.sa_handler = fun;
-  sigemptyset(&sa.sa_mask);
-  sa.sa_flags = 0;
+/*`    lwp_set_scheduler(AlwaysZero);*/
 
+    printf("Launching LWPS\n");
+    i=6;
+    if (-1 == new_lwp((lwpfun)indentnum,(void*)i,INITIALSTACK)) {
+        fprintf(stderr, "problem\n");
+    }
 
-  if ( sigaction(sig,&sa,NULL) < 0 ) {
-    perror("sigaction");
-    exit(-1);
-  }
+    if (-1 == new_lwp((lwpfun)indentnum,(void*)4,INITIALSTACK)) {
+    } 
+
+  lwp_start();  /*                    returns when the last lwp exits */
+
+  printf("Back from LWPS.\n");
+  return 0;
+}
+
+static void indentnum(void *num) {
+    printf("HELLO BITCHES %d\n", (int) num);
+    DBG("HELLO WORLD");
+
+    DBG("num: %d", (int)num);
+    lwp_yield();
+    DBG("1 yield");
+    lwp_yield();
+    DBG("2 yield");
+    lwp_exit();
+    return;
+
 }
 

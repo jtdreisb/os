@@ -1,6 +1,8 @@
 #ifndef LWPH
 #define LWPH
 #include <sys/types.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 typedef struct context_st {
   unsigned long pid;            /* lightweight process id  */
@@ -86,6 +88,13 @@ extern void lwp_set_scheduler(schedfun sched);
 /* LWP_PROC_LIMIT is the maximum number of LWPs active */
 #ifndef LWP_PROC_LIMIT
 #define LWP_PROC_LIMIT 30
+
 #endif
 
+#endif
+#define DEBUG 0
+#if DEBUG
+#define DBG(...) fprintf(stderr,__VA_ARGS__); fprintf(stderr,"\n")
+#else
+#define DBG(...) ; 
 #endif

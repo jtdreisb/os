@@ -6,12 +6,12 @@ LD 	= gcc
 
 LDFLAGS  = -Wall -g 
 
-PUBFILES =  README  hungrymain.c  libPN.a  libsnakes.a  lwp.h\
+PUBFILES =  README  hungrymain.c  libPLN.a  libsnakes.a  lwp.h\
 	    numbersmain.c  snakemain.c  snakes.h
 
-TARGET =  .
+TARGET =  
 
-PROGS	= snakes nums hungry
+PROGS	= snakes nums hungry bench myhungry mynums mysnakes
 
 SNAKEOBJS  = snakemain.o 
 
@@ -35,14 +35,23 @@ allclean: clean
 clean:	
 	rm -f $(OBJS) *~ TAGS
 
-snakes: snakemain.o libPN.a libsnakes.a
-	$(LD) $(LDFLAGS) -o snakes snakemain.o -L. -lncurses -lsnakes -lPN
+mysnakes: snakemain.o  libsnakes.a
+	$(LD) $(LDFLAGS) -o mysnakes snakemain.o -L. -lncurses -lsnakes -llwp
 
-hungry: hungrymain.o libPN.a libsnakes.a
-	$(LD) $(LDFLAGS) -o hungry hungrymain.o -L. -lncurses -lsnakes -lPN
+snakes: snakemain.o  libsnakes.a
+	$(LD) $(LDFLAGS) -o snakes snakemain.o -L. -lncurses -lsnakes -lPLN
 
-nums: numbersmain.o libPN.a 
-	$(LD) $(LDFLAGS) -o nums numbersmain.o -L. -lPN
+hungry: hungrymain.o  libsnakes.a
+	$(LD) $(LDFLAGS) -o hungry hungrymain.o -L. -lncurses -lsnakes -lPLN
+
+myhungry: hungrymain.o  libsnakes.a
+	$(LD) $(LDFLAGS) -o myhungry hungrymain.o -L. -lncurses -lsnakes -llwp
+
+nums: numbersmain.o  liblwp.a
+	$(LD) $(LDFLAGS) -o nums numbersmain.o -L. -lPLN
+
+mynums: numbersmain.o  liblwp.a
+	$(LD) $(LDFLAGS) -o mynums numbersmain.o -L. -llwp
 
 hungrymain.o: lwp.h snakes.h
 
@@ -50,11 +59,16 @@ snakemain.o: lwp.h snakes.h
 
 numbermain.o: lwp.h
 
-libPN.a: lwp.c
-	gcc -c lwp.c
-	ar r libPN.a lwp.o
+main.o: lwp.h liblwp.a
+
+liblwp.a: lwp.c lwp.h
+	gcc $(CFLAGS) -c lwp.c
+	ar r liblwp.a lwp.o
 	rm lwp.o
+
 
 pub:
 	scp $(PUBFILES) $(TARGET)
+bench: main.o liblwp.a
+	$(LD) $(LDFLAGS) -o bench main.o -L. -llwp
 

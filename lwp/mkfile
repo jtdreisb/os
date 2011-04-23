@@ -1,0 +1,62 @@
+CC 	= gcc
+
+CFLAGS  = -Wall -g 
+LD 	= gcc
+
+LDFLAGS  = -Wall -g 
+
+PUBFILES =  README  hungrymain.c  libPN.a  libsnakes.a  lwp.h\
+	    numbersmain.c  snakemain.c  snakes.h
+
+TARGET =  .
+
+PROGS	=  nums 
+
+
+NUMOBJS    = numbersmain.o
+
+OBJS	= $(NUMOBJS) main.o
+
+HDRS	= 
+
+EXTRACLEAN = core $(PROGS)
+
+
+bench: main.o liblwp.a
+	$(LD) $(LDFLAGS) -o bench main.o -L. -llwp
+his: main.o libPLN.a
+	$(LD) $(LDFLAGS) -o his main.o -L. -lPLN
+	
+
+all: 	$(PROGS)
+
+allclean: clean
+	@rm -f $(EXTRACLEAN)
+
+clean:	
+	rm -f $(OBJS) *~ TAGS
+
+
+
+nums: numbersmain.o liblwp.a 
+	$(LD) $(LDFLAGS) -o nums numbersmain.o -L. -llwp
+
+hungry: hungry.o libsnakes.a liblwp.a
+	$(LD) $(LDFLAGS) -o snakes hungry.o -lsnakes -L. -llwp
+
+
+
+main.o: lwp.h 
+
+hungry.o: lwp.h
+
+numbermain.o: lwp.h
+
+liblwp.a: lwp.c
+	gcc $(CFLAGS) -c lwp.c
+	ar r liblwp.a lwp.o
+	rm lwp.o
+
+pub:
+	scp $(PUBFILES) $(TARGET)
+

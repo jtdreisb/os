@@ -15,6 +15,7 @@ void * original_stack_pointer;
 
 void setRunning() {
     if(lwp_sched) {
+        /* should have checked for validity */
         lwp_running = lwp_sched();
     } else {
         /* not working */
@@ -29,6 +30,12 @@ void cleanup() {
     int i;
     for (i=lwp_running; i < lwp_procs; i++) {
         lwp_ptable[i] = lwp_ptable[i+1];
+    }
+    i = lwp_running;
+    /* get the next scheduled */
+    setRunning();    
+    if (i < lwp_running) {
+        lwp_running--;
     }
 }
 
@@ -123,10 +130,9 @@ void lwp_exit() {
         freeStack();
         lwp_stop();
     }
+    /* cleanup sets new running proc */
+    /* and it accounts for the missing proc */
     cleanup(); 
-
-    /* get the next scheduled */
-    setRunning();    
 
     /*SetSP(original_stack_pointer);*/
     freeStack();

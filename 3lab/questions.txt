@@ -1,0 +1,66 @@
+1. When user 2 opens the link to the missing file it will create the file with user 2 as the owner than user 1.
+
+2. Multiprogramming will increase cpu usage in highly io bound processes. The majority of the time a process will be waiting for input from a user or another program. Therefore, there is plenty of time for other programs to run while others wait for input.
+
+3. 1e9/1e3=1e6 per second. For %50 load it would be 500,000 system calls.
+
+4. Race conditions occur when multiple processes or threads are attempting to access the same data in shared memory and based upon their execution order the outputs will be different. For example, if there were three processes one producer, one modifier, and one consumer and the data used by each we read and written to the same location problems would arise depending on the order of the execution of the processes. The only order that will produce the desired output is produce->modify->consume; thus, any other order would result in a bad output.
+
+5. Yes. Assuming they are the only two processes on the machine and they are delegated to one individual cpu. They will not switch context in dangerous zones of the code, therefore, it will work as expected.
+
+6. Disabling all interrupts would prevent a context switch in a critical section of code, but if a "greedy" process were to hold the lock and spin there would be no way for other processes to get any cycles.
+
+7. The process that shows up twice in the process table with be given a second slice of time. Therefore, for every quanta that other processes get the double listed process would get two quanta. This could be used as a way of weighting processes that need more priority or are solely cpu bound.
+
+8.
+
+	a) Round robin
+		A - 30
+		B - 27
+		C - 13
+		D - 18
+		E - 25
+	b) Priority
+		A - 23
+		B - 7
+		C - 26
+		D - 30
+		E - 13
+	c) First come first serve
+		A - 10
+		B - 17
+		C - 20
+		D - 24
+		E - 30
+	d) Shortest first
+		A - 30
+		B - 20
+		C - 3
+		D - 7
+		E - 13
+9.
+	a) Round robin
+		A - 30
+		B - 27
+		C - 13
+		D - 18
+		E - 25
+	b) Priority
+		A - 23
+		B - 7
+		C - 26
+		D - 30
+		E - 13
+	c) First come first serve
+		A - 10
+		B - 17
+		C - 20
+		D - 24
+		E - 30
+	d) Shortest first
+		A - 30
+		B - 20
+		C - 3
+		D - 7
+		E - 13
+		

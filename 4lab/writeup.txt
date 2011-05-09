@@ -1,0 +1,49 @@
+1. GET the system
+
+Approach
+
+I looked through the kernel directory looking for files that had something to do with process management. Proc.[ch] piqued my interest. After browsing through the source I found the function pick_proc. Within the for loop in pick proc I added the following statement;
+
+if (q == IDLE_Q) {
+	kprintf("@\b");
+}
+
+This statement will print an '@' symbol and a backspace when the IDLE process is about to be run.
+
+To install the new kernel I performed the following
+
+# cd /usr/src/tools
+# make image
+# cp image /boot/image
+# reboot 
+
+Problems Encountered
+
+I wasn't sure that the modifications to the kernel were working properly. The '@' did show up, but I couldn't get it to go away.
+
+
+Solutions
+
+I wrote a simple infinite loop application
+
+$ cat > main.c
+int
+main(void) {
+	for (;;) {
+		;
+	}
+}
+^D
+$ cc main.c
+
+I recompiled the kernel with the '@' sign modification and ran the program.
+
+$ ./a.out@
+
+The '@' character did not print when the program was being run. Which meant that the code I added was indeed doing what I expected.
+
+Lessons Learned
+
+Compiling a minix kernel is much simpler than a linux kernel, but nowhere near as nice as compiling a plan9 kernel. ;)
+
+

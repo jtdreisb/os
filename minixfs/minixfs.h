@@ -1,5 +1,9 @@
-#include "sys/types.h"
-#include "stdint.h"
+#include <sys/types.h>
+#include <stdint.h>
+#include <stdio.h>
+#include <unistd.h>
+#include <stdlib.h>
+#include <string.h>
 /* 16 bites wide */
 /* overlayable */
 typedef struct {
@@ -18,6 +22,9 @@ typedef struct {
 	uint16_t		pad2;
 	uint16_t 		blocksize;
 	uint16_t		subversion;
+	
+	/*useful stuff */
+	uint32_t		zsize;
 } SuperBlock;
 
 /* Inode */
@@ -38,7 +45,7 @@ typedef struct {
 
 typedef struct {
 	uint32_t inode;
-	uint8_t name[60];
+	char name[60];
 } Dirent;
 
 typedef struct {
@@ -90,13 +97,23 @@ typedef struct {
 #define O_WR			0000002
 #define O_EX			0000001
 
-void printSuperBlock(SuperBlock * sb);
-SuperBlock * getSuperBlock(int fd, int offset);
 
-PartitionTable * getPartitionTable(int fd, int offset);
+extern SuperBlock *sb;
+extern int fd;
+extern int debug;
+
+
+void printSuperBlock();
+SuperBlock * getSuperBlock( int offset);
+
+PartitionTable * getPartitionTable( int offset);
 void printPartition(Partition *p);
 int isPartitioned(Partition *p);
 int isMinix(Partition *p);
 
-Inode * getInode(int fd, SuperBlock *sb, uint32_t num);
-void printInode(int fd, SuperBlock *sb, Inode* node);
+Inode * getInode( uint32_t num);
+void printInode(char *path, Inode* node);
+void doPath( char *path);
+
+uint8_t * readBlock( int size);
+void printFile(Dirent *d, int printDir);

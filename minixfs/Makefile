@@ -9,7 +9,11 @@ TARG = fs
 SRC=\
 	main.c\
 	minixfs.c\
-	
+	file.c\
+	inode.c\
+	super.c\
+	partition.c\
+
 HFILES=\
 	   minixfs.h\
 

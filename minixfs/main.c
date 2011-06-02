@@ -8,7 +8,9 @@
 // globals
 char *partition = NULL;
 char *subpartition = NULL;
-int  v = 1;
+int  debug = 3;
+int fd = -1;
+
 void usage() {
 	printf("usage:"
 		"\tfs filename\n");
@@ -18,10 +20,9 @@ void parseArgs(int argc, char ** argv) {
 }
 
 int main(int argc, char ** argv) {
-	SuperBlock *sb;
 /*	PartitionTable *pt; */
-	Inode *node;
-	int fd;
+//	Inode *node;
+
 	if (argc < 2) {
 		usage();
 		return 1;
@@ -34,19 +35,23 @@ int main(int argc, char ** argv) {
 	}
 
 	
-	sb = getSuperBlock(fd,0);
+	sb = getSuperBlock(0);
 	if (sb == NULL) {
 		perror("getSuperBlock");
 		return 1;
 	}
 
 
-	printSuperBlock(sb);
-	printf("Got SuperBlock\n");
-	node = getInode(fd,sb,1);
-	printInode(fd, sb, node);
-	
-	
+	//printSuperBlock();
+	//printf("Got SuperBlock\n");
+	//node = getInode(fd,sb,1);
+	//viprintInode(fd, sb, node);
+	doPath("/");
+	doPath("/src");
+	doPath("/src/Makefile/");
+	doPath("/src/Makefile");
+	// doPath("/Hello");
+	//printInode()
 	/* partition table */
 	/*pt = getPartitionTable(fd, 0);
 	
@@ -61,13 +66,13 @@ int main(int argc, char ** argv) {
 		printPartition(pt->part[2]);
 		printPartition(pt->part[3]);
 	}*/
-	close(fd);
+
 	// printf("part[0] %p\n", pt->part[0]);
 	// printf("part[0] %p\n", pt->part[1]);
 	
 	//free(pt->block);
 	// free(pt);
-	free(node);
+	//free(node);
 	free(sb);
 	close(fd);
 	return 0;

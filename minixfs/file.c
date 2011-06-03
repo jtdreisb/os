@@ -42,18 +42,22 @@ int getZone(uint8_t *dst, Inode *node, uint32_t index) {
         }
         index1 = index/indmax;
         offset = ind[index1]*sb->zsize;
-        free(ind);
-        if (lseek(fd,globalOffset+offset, SEEK_SET) == -1) {
-            perror ("lseek");
-            exit(1);
+        if (offset == 0) {
+            znum = 0;
+        } else {
+            free(ind);
+            if (lseek(fd,globalOffset+offset, SEEK_SET) == -1) {
+                perror ("lseek");
+                exit(1);
+            }
+            ind = (uint32_t *)readBlock(sb->zsize);
+            if (!ind) {
+                perror("readBlock");
+                exit(1);
+            }
+            index2 = index - index1;
+            znum = ind[index2];
         }
-        ind = (uint32_t *)readBlock(sb->zsize);
-        if (!ind) {
-            perror("readBlock");
-            exit(1);
-        }
-        index2 = index - index1;
-        znum = ind[index2];
         free(ind);
     }
     if (znum == 0) {

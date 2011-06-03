@@ -12,7 +12,7 @@ int debug = 0;
 int fd = -1;
 char *imgfile = NULL;
 char *path = "/";
-char *out= "/dev/stdout";
+char *out= NULL;
 int globalOffset = 0;
 
 void usage() {
@@ -111,10 +111,18 @@ int main(int argc, char ** argv) {
             perror("Partition");
             exit(1);
         }
-        globalOffset = pt->part[partition]->lFirst*SECTOR_SIZE;
         if (debug) {
             printPartition(pt->part[partition]);
         }
+        if (subpartition == -1) {
+            if (pt->part[partition]->type != MINIX_TYPE ) {
+                fprintf(stderr, "Bad partition type:  0x%X\n",
+                        pt->part[subpartition]->type);
+                exit(1);
+            }
+        }
+        globalOffset = pt->part[partition]->lFirst*SECTOR_SIZE;
+
         free(pt->block);
         free(pt);
     }
@@ -125,49 +133,66 @@ int main(int argc, char ** argv) {
             perror("Subpartition");
             exit(1);
         }
-        globalOffset = pt->part[subpartition]->lFirst*SECTOR_SIZE;
         if (debug) {
             printPartition(pt->part[subpartition]);
         }
+        if (pt->part[subpartition]->type != MINIX_TYPE ) {
+            fprintf(stderr, "Bad partition type:  0x%X",
+                    pt->part[subpartition]->type);
+            exit(1);
+        }
+        globalOffset = pt->part[subpartition]->lFirst*SECTOR_SIZE;
+
         free(pt->block);
         free(pt);
     }
-    
     sb = getSuperBlock();
     if (sb == NULL) {
         perror("getSuperBlock");
         return 1;
     }
 
-
     if (debug) {
         printSuperBlock();
     }
+
+    /* check the super block */
+    if (sb->magic != MAGIC_NUM) {
+        fprintf(stderr, "Bad magic number. (%X)\n",sb->magic);
+        exit(1);
+    }
+
     //printf("Got SuperBlock\n");
     //node = getInode(fd,sb,1);
     //viprintInode(fd, sb, node);
     d = doPath(path);
-    
     if (mode == MINLS) {
         printf("%s:\n",path);
         printFile(d,1);
     } else if (mode == MINGET){
         node = getInode(d->inode);
+        if (out == NULL) {
+            outfile = STDOUT_FILENO;
+        } else {
         outfile = open(out, O_WRONLY | O_TRUNC);
         if (outfile == -1) {
             perror(out);
             exit(1);
         }
+    }
+        fprintf(stderr, "0: debug\n");
         contents = getFile(node);
         if (contents == NULL) {
             fprintf(stderr, "problem getting file contents\n");
             exit(1);
         }
+        fprintf(stderr, "8: debug\n");
         if (write(outfile, contents, node->size) == -1) {
             fprintf(stderr, "problem writing to %s", out);
             exit(1);
         }
     }
+    fprintf(stderr, "9: debug\n");
     // doPath("/Hello");
     //printInode()
     /* partition table */

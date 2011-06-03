@@ -82,6 +82,7 @@ typedef struct {
 #define PARTITION_TABLE_OFFSET  0x1BE
 #define BOOTABLE                0x80
 #define MINIX_TYPE              0x81
+#define MAGIC_NUM               0x4d5a
 
 // permission masks
 #define FILETYPE_MASK   0170000

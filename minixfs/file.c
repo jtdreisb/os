@@ -81,19 +81,21 @@ int getZone(uint8_t *dst, Inode *node, uint32_t index) {
 /* we read out the whole file and dump it to the caller */
 uint8_t * getFile(Inode *node) {
     /* we want a total of node->size bytes */
-    int numzones,i;
+    uint32_t numzones,i;
     uint8_t *buf;
     if (node == NULL) 
         return NULL;
     /* memcpy() */
     /* node->size */
+    fprintf(stderr, "size / sb->zsize = %d / %d\n",node->size , sb->zsize);
     numzones = (node->size / sb->zsize) + 1;
+
     buf = malloc(numzones*sb->zsize);
     if (buf == NULL)
         return NULL;
 
     for (i=0; i<numzones; i++) {
-        if(getZone(buf+sb->zsize*i,node,i)) {
+        if(getZone(buf+(sb->zsize*i),node,i)) {
             fprintf(stderr, "unknown error getting zones\n");
         }
     }

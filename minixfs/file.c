@@ -28,7 +28,6 @@ int getZone(uint8_t *dst, Inode *node, uint32_t index) {
 
     } else {
         /* do the double */
-        fprintf(stderr, "double indirect not implemented\n");
         index -= indmax - 7;
         offset = node->double_indirect*sb->zsize;
         if (lseek(fd,globalOffset+offset, SEEK_SET) == -1) {
@@ -91,7 +90,6 @@ uint8_t * getFile(Inode *node) {
         return NULL;
     /* memcpy() */
     /* node->size */
-    fprintf(stderr, "size / sb->zsize = %d / %d\n",node->size , sb->zsize);
     numzones = (node->size / sb->zsize) + 1;
 
     buf = malloc(numzones*sb->zsize);

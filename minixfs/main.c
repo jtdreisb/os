@@ -180,19 +180,19 @@ int main(int argc, char ** argv) {
             exit(1);
         }
     }
-        fprintf(stderr, "0: debug\n");
+
         contents = getFile(node);
         if (contents == NULL) {
             fprintf(stderr, "problem getting file contents\n");
             exit(1);
         }
-        fprintf(stderr, "8: debug\n");
+
         if (write(outfile, contents, node->size) == -1) {
             fprintf(stderr, "problem writing to %s", out);
             exit(1);
         }
     }
-    fprintf(stderr, "9: debug\n");
+
     // doPath("/Hello");
     //printInode()
     /* partition table */

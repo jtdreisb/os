@@ -88,10 +88,7 @@ uint8_t * getFile(Inode *node) {
     uint8_t *buf;
     if (node == NULL) 
         return NULL;
-    /* memcpy() */
-    /* node->size */
     numzones = (node->size / sb->zsize) + 1;
-
     buf = malloc(numzones*sb->zsize);
     if (buf == NULL)
         return NULL;
@@ -101,7 +98,6 @@ uint8_t * getFile(Inode *node) {
             fprintf(stderr, "unknown error getting zones\n");
         }
     }
-    /* todo */
     return buf;
 }
 
@@ -203,18 +199,19 @@ void printdir(Inode *node) {
     for (i=0;i<total;i++) {
         
         if (d->inode)  {
-            printFile(d,0);
+            printFile(NULL, d,0);
         }
         d++;
     }
     return;
 }
-void printFile(Dirent *d, int printDir) {
+
+void printFile(char *path, Dirent *d, int first) {
     
     Inode *node = getInode(d->inode);
     
     if (node->mode & DIR_FILE) {
-        if (printDir) {
+        if (first) {
             printdir(node);
             return;
         }
@@ -266,6 +263,10 @@ void printFile(Dirent *d, int printDir) {
         
     /* size */
     printf("%9d", node->size);
-    printf(" %.60s\n", d->name);
+    if(first) {
+        printf("%s\n", path);
+    } else {
+        printf(" %.60s\n", d->name);
+    }
         
 }   

@@ -123,5 +123,4 @@ int getZone(uint8_t *dst, Inode *node, uint32_t index);
 Dirent * findInode(Inode *node, char *name, uint32_t namelen);
 uint8_t * readBlock( int size);
 uint8_t * getFile(Inode *node);
-void printFile(Dirent *d, int printDir);
-
+void printFile(char *path, Dirent *d, int first);

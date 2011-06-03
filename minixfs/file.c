@@ -14,7 +14,7 @@ int getZone(uint8_t *dst, Inode *node, uint32_t index) {
         /* go indirect */
         index -= 7;
         offset = node->indirect*sb->zsize;
-        if (lseek(fd,offset, SEEK_SET) == -1) {
+        if (lseek(fd,globalOffset + offset, SEEK_SET) == -1) {
             perror ("lseek");
             exit(1);
         }
@@ -31,7 +31,7 @@ int getZone(uint8_t *dst, Inode *node, uint32_t index) {
         fprintf(stderr, "double indirect not implemented\n");
         index -= indmax - 7;
         offset = node->double_indirect*sb->zsize;
-        if (lseek(fd,offset, SEEK_SET) == -1) {
+        if (lseek(fd,globalOffset+offset, SEEK_SET) == -1) {
             perror ("lseek");
             exit(1);
         }
@@ -43,7 +43,7 @@ int getZone(uint8_t *dst, Inode *node, uint32_t index) {
         index1 = index/indmax;
         offset = ind[index1]*sb->zsize;
         free(ind);
-        if (lseek(fd,offset, SEEK_SET) == -1) {
+        if (lseek(fd,globalOffset+offset, SEEK_SET) == -1) {
             perror ("lseek");
             exit(1);
         }
@@ -66,7 +66,7 @@ int getZone(uint8_t *dst, Inode *node, uint32_t index) {
 
     
     offset = znum*sb->zsize;
-    if (lseek(fd,offset, SEEK_SET) == -1) {
+    if (lseek(fd,globalOffset+offset, SEEK_SET) == -1) {
         perror ("lseek");
         exit(1);
     }
@@ -103,7 +103,7 @@ uint8_t * getFile(Inode *node) {
 
 #define MAX_LEN 60
 /* the show */
-Inode * doPath(char *path) {
+Dirent * doPath(char *path) {
     int namelen, nextNode = 1;
     Inode *node;
     Dirent *d, *root;
@@ -139,7 +139,7 @@ Inode * doPath(char *path) {
                 break;
             }
         }
-
+        
         /* check to see if no more */
         if (namelen == 0) {
             /*fprintf(stderr,"breaking out early\n");*/
@@ -166,11 +166,16 @@ Inode * doPath(char *path) {
         free(d);
     }
     
+
+    
     /* this must switch between ls & get */
-    printf("%s:\n",path);
-    printFile(d,1);
-    free(root);
-    return node;
+    
+    free (node);
+    
+    if (d != root) {
+        free(root);
+    }
+    return d;
 }
 
 void printdir(Inode *node) {

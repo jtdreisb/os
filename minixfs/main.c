@@ -12,7 +12,7 @@ int debug = 0;
 int fd = -1;
 char *imgfile = NULL;
 char *path = "/";
-char *out;
+char *out= "/dev/stdout";
 int globalOffset = 0;
 
 void usage() {
@@ -37,10 +37,11 @@ void parseArgs(int argc, char ** argv) {
         usage();
         exit(1);
     }
-    if (!strcmp(argv[0], "minls")) {
-        mode = MINLS;
-    } else if(!strcmp(argv[0],"minget")) {
+    i = strlen(argv[0]);
+    if (argv[0][i-1] == 't') {
         mode = MINGET;
+    } else {
+        mode = MINLS;
     }
     for (i=1; i<argc; i++) {
         if (!strncmp("-p",argv[i], 2)) {
@@ -90,8 +91,11 @@ void parseArgs(int argc, char ** argv) {
 
 int main(int argc, char ** argv) {
   PartitionTable *pt;
+    Dirent *d;
     Inode *node;
     parseArgs(argc,argv);
+    int outfile;
+    uint8_t *contents;
    /* printf("path = %s\n file = %s\n",path,imgfile);*/
     /*printf("part: %d\nsub: %d\n",partition, subpartition);*/
 
@@ -142,9 +146,28 @@ int main(int argc, char ** argv) {
     //printf("Got SuperBlock\n");
     //node = getInode(fd,sb,1);
     //viprintInode(fd, sb, node);
-    node = doPath(path);
-    free(node);
-
+    d = doPath(path);
+    
+    if (mode == MINLS) {
+        printf("%s:\n",path);
+        printFile(d,1);
+    } else if (mode == MINGET){
+        node = getInode(d->inode);
+        outfile = open(out, O_WRONLY | O_TRUNC);
+        if (outfile == -1) {
+            perror(out);
+            exit(1);
+        }
+        contents = getFile(node);
+        if (contents == NULL) {
+            fprintf(stderr, "problem getting file contents\n");
+            exit(1);
+        }
+        if (write(outfile, contents, node->size) == -1) {
+            fprintf(stderr, "problem writing to %s", out);
+            exit(1);
+        }
+    }
     // doPath("/Hello");
     //printInode()
     /* partition table */
@@ -166,6 +189,7 @@ int main(int argc, char ** argv) {
     // printf("part[0] %p\n", pt->part[1]);
     
     //free(node);
+    free(d);
     free(sb);
     close(fd);
     return 0;

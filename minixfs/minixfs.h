@@ -116,7 +116,7 @@ int isMinix(Partition *p);
 
 Inode * getInode(uint32_t num);
 void printInode(char *path, Inode* node);
-Inode * doPath( char *path);
+Dirent * doPath( char *path);
 Inode * getInode(uint32_t num);
 int getZone(uint8_t *dst, Inode *node, uint32_t index);
 Dirent * findInode(Inode *node, char *name, uint32_t namelen);

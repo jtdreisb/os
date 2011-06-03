@@ -59,7 +59,7 @@ PartitionTable * getPartitionTable() {
 	}
 
 	/* check magic */
- 	if (!(buffer[510] == 0x55) && !(buffer[511] == 0xAA)) {
+ 	if (!(buffer[510] == 0x55) || !(buffer[511] == 0xAA)) {
 		free(buffer);
 		fprintf(stderr, "Invalid magic number in boot block\n");
 		exit(1);

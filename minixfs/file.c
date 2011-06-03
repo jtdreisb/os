@@ -212,6 +212,7 @@ void printFile(char *path, Dirent *d, int first) {
     
     if (node->mode & DIR_FILE) {
         if (first) {
+            printf("%s:\n",path);
             printdir(node);
             return;
         }

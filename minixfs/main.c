@@ -167,8 +167,8 @@ int main(int argc, char ** argv) {
     //viprintInode(fd, sb, node);
     d = doPath(path);
     if (mode == MINLS) {
-        printf("%s:\n",path);
-        printFile(d,1);
+        
+        printFile(path,d,1);
     } else if (mode == MINGET){
         node = getInode(d->inode);
         if (out == NULL) {

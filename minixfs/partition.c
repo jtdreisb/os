@@ -44,22 +44,22 @@ void printPartition(Partition *p) {
 /* anything that is handle be errno is returned with NULL pointer
  * otherwise we blow up ourselves 
  */
-PartitionTable * getPartitionTable(int offset) {
+PartitionTable * getPartitionTable() {
 	PartitionTable *pt;
 	/* Partition *p;*/
 	uint8_t * buffer;
 	
-	if (lseek(fd, offset, SEEK_SET) == -1) {
+	if (lseek(fd, globalOffset, SEEK_SET) == -1) {
 		return NULL;
 	}
 
-	buffer = readBlock( SECTOR_SIZE);
+	buffer = readBlock(SECTOR_SIZE);
 	if (buffer == NULL) {
 		return NULL;
 	}
 
 	/* check magic */
- 	if (!((buffer[510] == 0x55) && (buffer[511] == 0xAA))) {
+ 	if (!(buffer[510] == 0x55) && !(buffer[511] == 0xAA)) {
 		free(buffer);
 		fprintf(stderr, "Invalid magic number in boot block\n");
 		exit(1);

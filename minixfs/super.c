@@ -41,10 +41,9 @@ void printSuperBlock() {
  * gets a superblock struct filled.
  * returns NULL on error (check perror)
  */
-SuperBlock * getSuperBlock(int offset) {
+SuperBlock * getSuperBlock() {
 	SuperBlock *sb;
-	
-	if (lseek(fd, SUPERBLOCK_SIZE + offset, SEEK_SET) == -1) {
+	if (lseek(fd, SUPERBLOCK_SIZE + globalOffset, SEEK_SET) == -1) {
 		return NULL;
 	}
 	sb = (SuperBlock*)readBlock(sizeof(SuperBlock));

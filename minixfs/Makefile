@@ -19,7 +19,13 @@ HFILES=\
 
 OBJS= $(patsubst %.c, %.o, $(SRC))
 
-all: 	$(TARG)
+all: 	$(TARG) minls minget
+
+minget: $(TARG)
+	cp $(TARG) minget
+
+minls: $(TARG)
+	cp $(TARG) minls
 
 clean:	
 	rm -f $(OBJS) *~

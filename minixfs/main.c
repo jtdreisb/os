@@ -20,9 +20,9 @@ void usage() {
     if (mode == MINLS) {
         printf("minls");
     } else {
-        printf("minget\n");
+        printf("minget");
     }
-    printf(" [-v] [-p part[-s subpart]] imagefile");
+    printf(" [-v] [-p part[-s subpart]] imagefile ");
     if (mode == MINLS) {
         printf("[path]\n");
     } else {
@@ -83,9 +83,16 @@ void parseArgs(int argc, char ** argv) {
             nonflags++;
         }  
     }
-    if (nonflags < 1) {
-        usage();
-        exit(1);
+    if (mode == MINGET) {
+        if (nonflags < 2) {
+            usage();
+            exit(1);
+        }
+    } else {
+        if (nonflags < 1) {
+            usage();
+            exit(1);
+        }
     }
 }
 
@@ -174,21 +181,25 @@ int main(int argc, char ** argv) {
         if (out == NULL) {
             outfile = STDOUT_FILENO;
         } else {
-        outfile = open(out, O_WRONLY | O_TRUNC);
-        if (outfile == -1) {
-            perror(out);
-            exit(1);
+            outfile = open(out, O_WRONLY | O_TRUNC);
+            if (outfile == -1) {
+                perror(out);
+                exit(1);
+            }
         }
-    }
+        if (node->mode & REG_FILE) {
+            contents = getFile(node);
+            if (contents == NULL) {
+                fprintf(stderr, "problem getting file contents\n");
+                exit(1);
+            }
 
-        contents = getFile(node);
-        if (contents == NULL) {
-            fprintf(stderr, "problem getting file contents\n");
-            exit(1);
-        }
-
-        if (write(outfile, contents, node->size) == -1) {
-            fprintf(stderr, "problem writing to %s", out);
+            if (write(outfile, contents, node->size) == -1) {
+                fprintf(stderr, "problem writing to %s", out);
+                exit(1);
+            }
+        } else {
+            fprintf(stderr, "Not a regular file\n");
             exit(1);
         }
     }

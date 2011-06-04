@@ -1,6 +1,16 @@
 #include "minixfs.h"
 
 
+
+void printInode(Inode *node) {
+    printf("Contents of Inode:\n"
+        "Is Directory\t");
+    if(node->mode & DIR_FILE) {
+        printf("YES\n");
+    } else {
+        printf("NO\n");
+    }
+}
 Inode * getInode(uint32_t num) {
     Inode *node;
     int tbytes;

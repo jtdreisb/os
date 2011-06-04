@@ -116,7 +116,7 @@ int isPartitioned(Partition *p);
 int isMinix(Partition *p);
 
 Inode * getInode(uint32_t num);
-void printInode(char *path, Inode* node);
+void printInode(Inode* node);
 Dirent * doPath( char *path);
 Inode * getInode(uint32_t num);
 int getZone(uint8_t *dst, Inode *node, uint32_t index);

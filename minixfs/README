@@ -1,0 +1,7 @@
+Jason Dreisbach (jtdreisb)
+
+Minix filesystem Reader
+
+This is actually the same binary for both minget and minls. It switches funtionality due to the name of the executable's last char 's' vs 't'.
+
+I'm having trouble with the indirect zones and the big blocks... will need to try to test it
